@@ -1,86 +1,143 @@
 module.exports.config = {
     name: "help",
-    version: "1.0.0",
+    version: "1.1.1",
     hasPermssion: 0,
-    credits: "Mirai Team",
-    description: "Hướng dẫn cho người mới",
-    commandCategory: "tiện ích",
-    usages: "[Tên module]",
-    cooldowns: 5,
-    envConfig: {
-        autoUnsend: true,
-        delayUnsend: 60
-    }
+    credits: "DC-Nam",//mod lại by táo táo
+    description: "Xem danh sách lệnh và info",
+    commandCategory: "Tiện ích",
+    usages: "[tên lệnh/all]",
+    cooldowns: 5
 };
-
-module.exports.run = function({ api, event, args }) {
-    try {
-    const { commands } = global.client;
-    const { threadID, messageID } = event;
-    const command = commands.get((args[0] || "").toLowerCase());
-    const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
-    const { autoUnsend, delayUnsend } = global.configModule[this.config.name];
-    const prefix = (threadSetting.hasOwnProperty("PREFIX")) ? threadSetting.PREFIX : global.config.PREFIX;
-
-    if (args[0] == "all") {
-        const command = commands.values();
-        var group = [], msg = "";
-        for (const commandConfig of command) {
-            if (!group.some(item => item.group.toLowerCase() == commandConfig.config.commandCategory.toLowerCase())) group.push({ group: commandConfig.config.commandCategory.toLowerCase(), cmds: [commandConfig.config.name] });
-            else group.find(item => item.group.toLowerCase() == commandConfig.config.commandCategory.toLowerCase()).cmds.push(commandConfig.config.name);
-        }
-        group.forEach(commandGroup => msg += `『🧸』 ${commandGroup.group.charAt(0).toUpperCase() + commandGroup.group.slice(1)}\n${commandGroup.cmds.join(', ')}\n\n`);
-        return api.sendMessage(`=== 『𝐋𝐈𝐒𝐓 𝐂𝐎𝐌𝐌𝐀𝐍𝐃』 ===\n` + msg + `\n🗂𝐒𝐨̂́ 𝐥𝐞̣̂𝐧𝐡 𝐡𝐢𝐞̣̂𝐧 𝐜𝐨́:${commands.size}\n📃𝐇𝐃𝐒𝐃 𝐡𝐞𝐥𝐩 𝐬𝐨̂́ 𝐭𝐫𝐚𝐧𝐠 𝐦𝐮𝐨̂́𝐧 𝐱𝐞𝐦 𝐡𝐨𝐚̣̆𝐜 𝐡𝐞𝐥𝐩𝐚𝐥𝐥 𝐝𝐞̂̉ 𝐱𝐞𝐦 𝐭𝐨𝐚̀𝐧 𝐛𝐨̣̂ 𝐥𝐞̣̂𝐧𝐡\n❌𝐍𝐠𝐡𝐢𝐞̂𝐦 𝐜𝐚̂́𝐦 𝐤𝐡𝐨̂𝐧𝐠 𝐬𝐮̛̉ 𝐝𝐮̣𝐧𝐠 𝐥𝐞̣̂𝐧𝐡 𝐭𝐡𝐮𝐨̣̂𝐜 𝐀𝐃𝐌𝐈𝐍 𝐁𝐎𝐓\n❗️𝐊𝐡𝐢 𝐛𝐚̣𝐧 𝐭𝐡𝐚̉ "😠" 𝐁𝐨𝐭 𝐬𝐞̃ 𝐭𝐮̛̣ 𝐭𝐡𝐮 𝐡𝐨̂̀𝐢`, threadID, async (error, info) =>{
-            if (autoUnsend) {
-                await new Promise(resolve => setTimeout(resolve, delayUnsend * 1000));
-                return api.unsendMessage(info.messageID);
-            } else return;
-        });
-    }
-if (!command) {
-    const commandsPush = [];
-    const page = parseInt(args[0]) || 1;
-    const pageView = 20;
-    let i = 0;
-    let msg = "=== 『𝐋𝐈𝐒𝐓 𝐂𝐎𝐌𝐌𝐀𝐍𝐃』 ===\n";
-
-    for (var [name, value] of (commands)) {
-        name += `
-『💓』:${value.config.description}
-⏰𝐓𝐡𝐨̛̀𝐢 𝐠𝐢𝐚𝐧 𝐜𝐡𝐨̛̀: ${command.config.cooldowns}s
-🪪𝐐𝐮𝐲𝐞̂̀𝐧 𝐡𝐚̣𝐧: ${((command.config.hasPermssion == 0) ? `Người dùng` : (command.config.hasPermssion == 1) ? `Quản trị viên nhóm` : `ADMIN BOT`)}\n`;
-        commandsPush.push(name);
-    }
-
-    commandsPush.sort((a, b) => a.data - b.data);
-
-    const first = pageView * page - pageView;
-    i = first;
-    const helpView = commandsPush.slice(first, first + pageView);
-
-    for (let cmds of helpView)
-        msg += `『🧸』: ${cmds}\n`;
-    const cmdsView = `
-🗃𝐓𝐫𝐚𝐧𝐠: ${page}|${Math.ceil(commandsPush.length/pageView)}
-🗂𝐓𝐨̂̉𝐧𝐠 𝐥𝐞̣̂𝐧𝐡 𝐜𝐨́ 𝐭𝐡𝐞̂̉ 𝐝𝐮̀𝐧𝐠 𝐥𝐚̀ :${commandsPush.length}
-📃𝐇𝐃𝐒𝐃 𝐡𝐞𝐥𝐩 𝐬𝐨̂́ 𝐭𝐫𝐚𝐧𝐠 𝐦𝐮𝐨̂́𝐧 𝐱𝐞𝐦 𝐡𝐨𝐚̣̆𝐜 𝐡𝐞𝐥𝐩𝐚𝐥𝐥 𝐝𝐞̂̉ 𝐱𝐞𝐦 𝐭𝐨𝐚̀𝐧 𝐛𝐨̣̂ 𝐥𝐞̣̂𝐧𝐡`;
-    return api.sendMessage(msg + cmdsView, threadID,
-        async (error, info) => {
-            if(error) return console.log(error)
-            if (autoUnsend) {
-                await new Promise(resolve =>
-                    setTimeout(resolve, delayUnsend * 1000));
-                return api.unsendMessage(info.messageID);
-            } else return;
-        });
+module.exports.languages = {
+    "vi": {},
+    "en": {}
 }
-return api.sendMessage(` 
-💾𝐋𝐞̣̂𝐧𝐡: ${command.config.name}
-\n📋𝐓𝐡𝐨̂𝐧𝐠 𝐭𝐢𝐧 𝐥𝐞̣̂𝐧𝐡: ${command.config.description}
-\n📃𝐂𝐚́𝐜𝐡 𝐬𝐮̛̉ 𝐝𝐮̣𝐧𝐠 𝐥𝐞̣̂𝐧𝐡: ${prefix}${command.config.name} ${(command.config.usages) ? command.config.usages : "𝐂𝐡𝐮̛𝐚 𝐮𝐩𝐝𝐚𝐭𝐞 𝐡𝐨𝐚̣̆𝐜 𝐜𝐡𝐮̛𝐚 𝐜𝐨́ 𝐡𝐮̛𝐨̛́𝐧𝐠 𝐝𝐚̂̃𝐧 𝐜𝐮̣ 𝐭𝐡𝐞̂̉ 𝐭𝐮̛̀ 𝐚𝐝𝐦𝐢𝐧"}
-\n⏰𝐓𝐡𝐨̛̀𝐢 𝐠𝐢𝐚𝐧 𝐜𝐡𝐨̛̀: ${command.config.cooldowns}
-\n🪪𝐐𝐮𝐲𝐞̂̀𝐧 𝐡𝐚̣𝐧: ${((command.config.hasPermssion == 0) ? `Người dùng` : (command.config.hasPermssion == 1) ? `Quản trị viên nhóm` : `ADMIN BOT`)}`, threadID, messageID);
-} catch(e) {
-    console.log(e)
+module.exports.run = async function({
+    api,
+    event,
+    args,
+  Currencies,
+  __GLOBAL
+}) {
+const { events } = global.client;
+  const time = process.uptime(),
+		hours = Math.floor(time / (60 * 60)),
+		minutes = Math.floor((time % (60 * 60)) / 60),
+		seconds = Math.floor(time % 60);
+  var z_1 = (hours < 10) ? '0' + hours : hours;
+    var x_1 = (minutes < 10) ? '0' + minutes : minutes;
+    var y_1 = (seconds < 10) ? '0' + seconds : seconds;
+const moment = require("moment-timezone");
+  const timeNow = moment.tz("Asia/Ho_Chi_Minh").format("DD/MM/YYYY || HH:mm:ss");
+  const { commands } = global.client;
+    const {
+        threadID: tid,
+        messageID: mid,
+        senderID: sid
+    } = event
+    var type = !args[0] ? "" : args[0].toLowerCase()
+    var msg = "",
+        array = [],
+        i = 0
+    const cmds = global.client.commands
+    const TIDdata = global.data.threadData.get(tid) || {}
+    var prefix = TIDdata.PREFIX || global.config.PREFIX
+    if (type == "all") {
+        for (const cmd of cmds.values()) {
+            msg += `💞${++i}. ${cmd.config.name}: ${cmd.config.description}\n`
+        }
+        return api.sendMessage(msg, tid, mid)
     }
-};
+    if (type == "all") return
+    if (type) {
+        for (const cmd of cmds.values()) {
+            array.push(cmd.config.name.toString())
+        }
+        if (!array.find(n => n == args[0].toLowerCase())) {
+            const stringSimilarity = require('string-similarity')
+            commandName = args.shift().toLowerCase() || ""
+            var allCommandName = [];
+            const commandValues = cmds['keys']()
+           let i = 1;
+            for (const cmd of commandValues) allCommandName.push(cmd)
+            const checker = stringSimilarity.findBestMatch(commandName, allCommandName)
+            if (checker.bestMatch.rating >= 0.5) command = client.commands.get(checker.bestMatch.target)
+            msg = `Không tìm thấy lệnh '${type}' trong hệ thống.\n➝ Lệnh gần giống được tìm thấy '${checker.bestMatch.target}'`
+            api.sendMessage(msg, tid, mid)
+        }
+        const cmd = cmds.get(type).config
+        msg = `🧸 𝗧𝗲̂𝗻: ${cmd.name} ( ${cmd.version} )\n🔗 𝗤𝘂𝘆𝗲̂̀𝗻 𝗵𝗮̣𝗻: ${TextPr(cmd.hasPermssion)}\n👤 𝗧𝗮́𝗰 𝗴𝗶𝗮̉: ${cmd.credits}\n💬 𝗠𝗼̂ 𝘁𝗮̉: ${cmd.description}\n🧩 𝗧𝗵𝘂𝗼̣̂𝗰 𝗻𝗵𝗼́𝗺: ${cmd.commandCategory}\n🌟 𝗖𝗮́𝗰𝗵 𝘀𝘂̛̉ 𝗱𝘂̣𝗻𝗴: ${cmd.usages}\n⏰ 𝗧𝗵𝗼̛̀𝗶 𝗴𝗶𝗮𝗻 𝗰𝗵𝗼̛̀: ${cmd.cooldowns}s`
+        api.sendMessage(msg, tid, mid)
+    } else {
+        CmdCategory()
+        array.sort(S("nameModule"))
+        for (const cmd of array) {
+          msg1 = `🌸====『 𝗛𝗘𝗟𝗣 』====🌸\n\n`
+            msg += `${i++}. 𝗧𝗵𝘂𝗼̣̂𝗰 𝗡𝗵𝗼́𝗺: ${cmd.cmdCategory.toUpperCase()}\n☁️ 𝗖𝗼́ 𝘁𝗼̂̉𝗻𝗴 ${cmd.nameModule.length} 𝗹𝗲̣̂𝗻𝗵 🐾\n━━━━━━━━━━━━━━━━━━\n`
+        }
+        msg += `\n\n🦋 𝗛𝗶𝗲̣̂𝗻 𝘁𝗮̣𝗶 BotMiraiv2 𝗰𝗼́ ${cmds.size} 𝗹𝗲̣̂𝗻𝗵 𝗰𝗼́ 𝘁𝗵𝗲̂̉ 𝘀𝘂̛̉ 𝗱𝘂̣𝗻𝗴\n🧸 𝗛𝗗𝗦𝗗: !𝗵𝗲𝗹𝗽 + 𝘁𝗲̂𝗻 𝗹𝗲̣̂𝗻𝗵 𝗻𝗲̂́𝘂 𝗺𝘂𝗼̂́𝗻 𝘅𝗲𝗺 𝘁𝗵𝗼̂𝗻𝗴 𝘁𝗶𝗻 𝗰𝘂̉𝗮 𝗹𝗲̣̂𝗻𝗵 đ𝗼́\n🌸 𝗛𝗗𝗦𝗗: !𝗵𝗲𝗹𝗽 + 𝗮𝗹𝗹 đ𝗲̂̉ 𝘅𝗲𝗺 𝘁𝗮̂́𝘁 𝗰𝗮̉ 𝗹𝗲̣̂𝗻𝗵 𝗰𝗼́ 𝘁𝗿𝗲̂𝗻 𝗵𝗲̣̂ 𝘁𝗵𝗼̂́𝗻𝗴 𝗯𝗼𝘁\n\n😻 𝗧𝗵𝗮̉ 𝗰𝗮̉𝗺 𝘅𝘂́𝗰 "🤍" 𝘃𝗮̀𝗼 𝘁𝗶𝗻 𝗻𝗵𝗮̆́𝗻 𝗻𝗮̀𝘆 đ𝗲̂̉ 𝘅𝗲𝗺 𝘁𝗵𝗼̂𝗻𝗴 𝘁𝗶𝗻 𝘃𝗲̂̀ 𝗯𝗼𝘁 𝗺𝗮̀ 𝗯𝗮̣𝗻 đ𝗮𝗻𝗴 𝘀𝘂̛̉ 𝗱𝘂̣𝗻𝗴\n⏰️==== [ ${timeNow} ] ====⏰️`
+        api.sendMessage({body: msg1 + msg, attachment: (await global.nodemodule["axios"]({
+url: (await global.nodemodule["axios"]('https://api.bicheckaccngu.repl.co/images/loli')).data.url,
+method: "GET",
+responseType: "stream"
+})).data
+},event.threadID, (err, info) => {
+    global.client.handleReaction.push({
+      name: this.config.name, 
+      messageID: info.messageID,
+      author: event.senderID,
+    })
+    },event.messageID);
+    }
+  module.exports.handleReaction = async ({ event, api, handleReaction, Currencies, Users}) => {
+const axios = global.nodemodule["axios"];
+const fs = global.nodemodule["fs-extra"];
+const { threadID, messageID, userID } = event;
+if (event.userID != handleReaction.author) return;
+if (event.reaction != "🤍") return; 
+ api.unsendMessage(handleReaction.messageID);
+        var msg = `===== [ 𝗧𝗛𝗢̂𝗡𝗚 𝗧𝗜𝗡 𝗕𝗢𝗧 ] =====\n\n💮 𝗛𝗶𝗲̣̂𝗻 𝘁𝗮̣𝗶 𝗯𝗼𝘁 𝗻𝗵𝗮𝘁𝗵𝗼𝗮𝗻𝗴 đ𝗮̃ 𝗼𝗻𝗹 đ𝘂̛𝗼̛̣𝗰 ${hours} 𝗚𝗶𝗼̛̀ ${minutes} 𝗣𝗵𝘂́𝘁 ${seconds} 𝗚𝗶𝗮̂𝘆\n⚙️ 𝗣𝗵𝗶𝗲̂𝗻 𝗯𝗮̉𝗻 𝗵𝗶𝗲̣̂𝗻 𝘁𝗮̣𝗶 𝗰𝘂̉𝗮 𝗯𝗼𝘁: ${global.config.version}\n🔗 𝗧𝗼̂̉𝗻𝗴 𝗹𝗲̣̂𝗻𝗵: ${commands.size}\n🖨️ 𝗛𝗶𝗲̣̂𝗻 𝘁𝗮̣𝗶 𝗰𝗼́: ${events.size} 𝗹𝗲̣̂𝗻𝗵 𝘀𝘂̛̣ 𝗸𝗶𝗲̣̂𝗻\n👥 𝗧𝗼̂̉𝗻𝗴 𝗻𝗴𝘂̛𝗼̛̀𝗶 𝗱𝘂̀𝗻𝗴: ${global.data.allUserID.length}\n🏘️ 𝗧𝗼̂̉𝗻𝗴 𝗻𝗵𝗼́𝗺: ${global.data.allThreadID.length}\n💓 𝗣𝗿𝗲𝗳𝗶𝘅 𝗯𝗼𝘁: ${prefix}`
+        return api.sendMessage({body: msg, attachment: (await global.nodemodule["axios"]({
+url: (await global.nodemodule["axios"]('https://TPKTAO.last-namename.repl.co/image/robot')).data.url,
+method: "GET",
+responseType: "stream"
+})).data
+},event.threadID); 
+  }
+    function CmdCategory() {
+        for (const cmd of cmds.values()) {
+            const {
+                commandCategory,
+                hasPermssion,
+                name: nameModule
+            } = cmd.config
+            if (!array.find(i => i.cmdCategory == commandCategory)) {
+                array.push({
+                    cmdCategory: commandCategory,
+                    permission: hasPermssion,
+                    nameModule: [nameModule]
+                })
+            } else {
+                const find = array.find(i => i.cmdCategory == commandCategory)
+                find.nameModule.push(nameModule)
+            }
+        }
+    }
+}
+
+function S(k) {
+    return function(a, b) {
+        let i = 0;
+        if (a[k].length > b[k].length) {
+            i = 1
+        } else if (a[k].length < b[k].length) {
+            i = -1
+        }
+        return i * -1
+    }
+}
+
+function TextPr(permission) {
+    p = permission
+    return p == 0 ? "Thành Viên" : p == 1 ? "Admin Box" : p = 2 ? "Admin bot" : "Toàn Quyền"
+}
