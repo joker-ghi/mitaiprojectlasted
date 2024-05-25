@@ -1,24 +1,18 @@
-const request = require("request");
-const fs = require("fs")
-const axios = require("axios")
 module.exports.config = {
-  name: "gái",
+  name: "gai",
   version: "1.0.0",
   hasPermssion: 0,
-  credits: "huy hoàng và hoàng ",
-  description: "Ảnh Gái Xinh",
-  commandCategory: "random-img",
-  usages: "gái",
-  cooldowns: 0,
- 
+  credits: "Thanh-Tuan",
+  description: "video gái sexy",
+  commandCategory: "giải trí",
+  usages: "noprefix",
+  cooldowns: 0
 };
+module.exports.run = async function() {}
 
-module.exports.run = async({api, event, Currencies}) => {
-  var data = await Currencies.getData(event.senderID);
-  var money = data.money
-  const moneyUser = (await Currencies.getData(event.senderID)).money;
-  if (1000 > moneyUser) return api.sendMessage(" Bạn Nghèo Mà Vẫn Muốn Ngắm Gái À!", event.threadID, event.messageID);
-	var link = [
+module.exports.handleEvent = async function ({ api, event, threads }) {
+  const axios = require("axios");
+var image = [
 "https://i.imgur.com/bDgHtLv.jpg", "https://i.imgur.com/e8pPmPv.jpg",
 "https://i.imgur.com/FZNZrmg.jpg",
 "https://i.imgur.com/8qk4gq0.jpg",
@@ -4482,13 +4476,15 @@ module.exports.run = async({api, event, Currencies}) => {
 "https://i.imgur.com/cNYGt4A.jpg",
 "https://i.imgur.com/W3CoVmJ.jpg",
 "https://i.imgur.com/2jAukrS.jpg",
-   ];
-  Currencies.setData(event.senderID, options = {money: money - 1000})
-   var callback = () => 
-   api.sendMessage({
-    body:`→ Lại gái suốt ngày gái😼\n→ Số ảnh hiện có: ${link.length}`,
-    attachment: fs.createReadStream(__dirname + "/cache/gaixinh.jpg")
-  }, event.threadID, (err, info) =>
-        setTimeout(() => {api.unsendMessage(info.messageID) } , 1000000));
-       request(link[Math.floor(Math.random() * link.length)]).pipe(fs.createWriteStream(__dirname+"/cache/gaixinh.jpg")).on("close",() => callback());
-   };
+], stt = ["1","2","3","4","5","6"], srd = stt[Math.floor(Math.random() * stt.length)]
+for (i=0; i<srd; i++){
+var stream = (await axios.get((await axios.get(`https://toan-culi.tutoan205.repl.co/images/gaixinhvn`)).data.url,  {
+                    responseType: 'stream'
+                })).data
+image.push(stream)
+}
+  const { body } = event;
+  if (body.toLowerCase() == "Gái" || (body.toLowerCase() == "gái") ||  (body.toLowerCase() == "Ảnh gái") || (body.toLowerCase() == "ảnh gái")) {
+       api.sendMessage({body: ``,attachment: image}, event.threadID, event.messageID);
+};
+}
