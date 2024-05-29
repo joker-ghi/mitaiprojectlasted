@@ -1,4 +1,4 @@
-const 
+
     //chạy index 
 const { spawn } = require("child_process");
 const { readFileSync } = require("fs-extra");
